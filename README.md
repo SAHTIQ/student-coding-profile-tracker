@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # CodePulse — LeetCode Productivity Analytics Platform
 
 A modern, dashboard-focused developer analytics web application designed to track, benchmark, diagnose, and forecast coding activity using public LeetCode profile data.
@@ -93,3 +94,7 @@ To test error handling and simulated states in the **Add Student** dialog:
 - Enter a username containing `ratelimit` (e.g. `burst_ratelimit`) -> **HTTP 429 Simulated Rate Limit** (`rate_limited`).
 - Enter a username containing `error` or `fail` -> **Connection Reset Simulation** (`failed`).
 - Enter an existing username (e.g. `aarav_algo`) -> **Duplicate Username Prevention Error**.
+=======
+# student-coding-profile-tracker
+Track student's coding profiles such as leetcode , hackerRank , codeChef , Github , codeForce , etc
+>>>>>>> e67806d7d6269b6e5f5c1f315a0eee47c34ca4bd
