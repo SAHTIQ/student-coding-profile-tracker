@@ -1,0 +1,116 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String          @id @default(uuid())
+  email        String          @unique
+  passwordHash String
+  role         String          @default("STUDENT")
+  isActive     Boolean         @default(true)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  studentProfile StudentProfile?
+  facultyProfile FacultyProfile?
+
+  @@index([email])
+  @@index([role])
+}
+
+model FacultyProfile {
+  id                   String   @id @default(uuid())
+  userId               String   @unique
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  facultyId            String   @unique
+  name                 String
+  department           String
+  canViewOwnDepartment Boolean  @default(true)
+  canExportReports     Boolean  @default(true)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@index([department])
+}
+
+model StudentProfile {
+  id               String   @id @default(uuid())
+  userId           String   @unique
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rollNumber       String   @unique
+  name             String
+  department       String
+  yearOfStudy      String
+  section          String?
+  batch            String?
+  leetcodeUsername String   @unique
+  targetWeeklyGoal Int      @default(5)
+  collectionStatus String   @default("pending")
+  lastSyncedAt     DateTime?
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  submissions      ProblemSubmission[]
+  dailyAggregates  DailyActivityAggregate[]
+
+  @@index([rollNumber])
+  @@index([department])
+  @@index([yearOfStudy])
+  @@index([leetcodeUsername])
+}
+
+model Problem {
+  id          String              @id @default(uuid())
+  title       String
+  titleSlug   String              @unique
+  difficulty  String              @default("MEDIUM")
+  topicTags   String              @default("[]")
+  platform    String              @default("LeetCode")
+  url         String?
+
+  submissions ProblemSubmission[]
+
+  @@index([difficulty])
+  @@index([titleSlug])
+}
+
+model ProblemSubmission {
+  id              String         @id @default(uuid())
+  studentId       String
+  student         StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  problemId       String
+  problem         Problem        @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  submissionId    String?
+  solvedDate      String
+  solvedTimestamp DateTime
+  language        String?        @default("cpp")
+  createdAt       DateTime       @default(now())
+
+  @@unique([studentId, problemId, solvedDate])
+  @@index([studentId])
+  @@index([problemId])
+  @@index([solvedDate])
+}
+
+model DailyActivityAggregate {
+  id             String         @id @default(uuid())
+  studentId      String
+  student        StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  activityDate   String
+  totalSolved    Int            @default(0)
+  easySolved     Int            @default(0)
+  mediumSolved   Int            @default(0)
+  hardSolved     Int            @default(0)
+  topicBreakdown String?
+  createdAt      DateTime       @default(now())
+
+  @@unique([studentId, activityDate])
+  @@index([studentId])
+  @@index([activityDate])
+}

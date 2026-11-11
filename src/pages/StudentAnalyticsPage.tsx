@@ -220,19 +220,6 @@ export const StudentAnalyticsPage: React.FC = () => {
         skills={profile?.tagProblemCounts}
       />
 
-      {/* Pacing Momentum & Trajectory Analytics */}
-      {forecastSummary && (
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <TrendingUp className="w-4 h-4 text-brand-600" />
-            <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
-              Practice Momentum & Trajectory Analytics
-            </h3>
-          </div>
-          <ForecastMetricsCard summary={forecastSummary} />
-        </div>
-      )}
-
       {/* Coding Activity Heatmap */}
       <ActivityHeatmap
         timeline={profile?.dailyActivityTimeline || []}
@@ -291,6 +278,19 @@ export const StudentAnalyticsPage: React.FC = () => {
         insights={behavioralInsights}
         title="Coding Behavior Insights & Practice Patterns"
       />
+
+      {/* Pacing Momentum & Trajectory Analytics */}
+      {forecastSummary && (
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <TrendingUp className="w-4 h-4 text-brand-600" />
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
+              Practice Momentum & Trajectory Analytics
+            </h3>
+          </div>
+          <ForecastMetricsCard summary={forecastSummary} />
+        </div>
+      )}
     </div>
   );
 };

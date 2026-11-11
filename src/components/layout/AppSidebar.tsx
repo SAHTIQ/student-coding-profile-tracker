@@ -25,27 +25,40 @@ interface AppSidebarProps {
 }
 
 export const AppSidebar: React.FC<AppSidebarProps> = ({ isOpen, onClose }) => {
-  const { user, role, logout, loginAsAdmin, loginAsStudent } = useAuth();
-  const isAdmin = role === 'admin';
+  const { user, role, logout, loginAsAdmin, loginAsFaculty, loginAsStudent } = useAuth();
+  const isSuperAdmin = role === 'SUPER_ADMIN' || role === 'admin';
+  const isFaculty = role === 'FACULTY';
 
-  // Role-appropriate navigation items (Section 4 & 5)
-  const navItems = isAdmin
-    ? [
-        { label: 'Overview', to: '/admin-overview', icon: LayoutDashboard },
-        { label: 'Students', to: '/students', icon: Users },
-        { label: 'Leaderboard & Compare', to: '/compare', icon: Trophy },
-        { label: 'Reports', to: '/reports', icon: FileSpreadsheet },
-        { label: 'Settings', to: '/settings', icon: Settings },
-      ]
-    : [
-        { label: 'My Analytics', to: '/my-analytics', icon: UserCheck },
-        { label: 'Leaderboard & Compare', to: '/compare', icon: Trophy },
-        { label: 'Reports', to: '/reports', icon: FileSpreadsheet },
-        { label: 'Settings', to: '/settings', icon: Settings },
-      ];
+  // Role-appropriate navigation items
+  let navItems = [
+    { label: 'My Analytics', to: '/my-analytics', icon: UserCheck },
+    { label: 'Leaderboard & Compare', to: '/compare', icon: Trophy },
+    { label: 'Reports', to: '/reports', icon: FileSpreadsheet },
+    { label: 'Settings', to: '/settings', icon: Settings },
+  ];
+
+  if (isSuperAdmin) {
+    navItems = [
+      { label: 'Super Admin', to: '/super-admin', icon: Shield },
+      { label: 'Overview', to: '/admin-overview', icon: LayoutDashboard },
+      { label: 'Students Roster', to: '/students', icon: Users },
+      { label: 'Leaderboard & Compare', to: '/compare', icon: Trophy },
+      { label: 'Reports', to: '/reports', icon: FileSpreadsheet },
+      { label: 'Settings', to: '/settings', icon: Settings },
+    ];
+  } else if (isFaculty) {
+    navItems = [
+      { label: 'Faculty Portal', to: '/faculty-portal', icon: UserCheck },
+      { label: 'Leaderboard & Compare', to: '/compare', icon: Trophy },
+      { label: 'Reports', to: '/reports', icon: FileSpreadsheet },
+      { label: 'Settings', to: '/settings', icon: Settings },
+    ];
+  }
 
   const handleRoleToggle = () => {
-    if (isAdmin) {
+    if (isSuperAdmin) {
+      loginAsFaculty();
+    } else if (isFaculty) {
       loginAsStudent();
     } else {
       loginAsAdmin();
@@ -103,7 +116,11 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ isOpen, onClose }) => {
           {/* Navigation Links */}
           <nav className="p-4 space-y-1.5 flex-1 overflow-y-auto">
             <div className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400 font-mono">
-              {isAdmin ? 'ADMINISTRATIVE SUITE' : 'STUDENT WORKSPACE'}
+              {isSuperAdmin
+                ? 'SUPER ADMIN SUITE'
+                : isFaculty
+                ? 'FACULTY WORKSPACE'
+                : 'STUDENT WORKSPACE'}
             </div>
 
             {navItems.map((item) => {
@@ -149,15 +166,20 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ isOpen, onClose }) => {
                 {user?.displayName || 'Demo User'}
               </span>
               <span className="text-[11px] font-mono text-slate-400 flex items-center gap-1 mt-0.5">
-                {isAdmin ? (
+                {isSuperAdmin ? (
                   <>
                     <Shield className="w-3 h-3 text-amber-400" />
                     <span>Super Admin</span>
                   </>
+                ) : isFaculty ? (
+                  <>
+                    <UserCheck className="w-3 h-3 text-indigo-400" />
+                    <span>Faculty ({user?.department || 'Dept'})</span>
+                  </>
                 ) : (
                   <>
                     <GraduationCap className="w-3 h-3 text-brand-400" />
-                    <span>Student Demo</span>
+                    <span>Student ({user?.rollNumber || 'Roll No'})</span>
                   </>
                 )}
               </span>
@@ -169,10 +191,10 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({ isOpen, onClose }) => {
             <button
               onClick={handleRoleToggle}
               className="flex-1 py-1.5 px-2 rounded-lg bg-slate-800/90 hover:bg-slate-700 text-slate-200 text-[11px] font-medium transition-colors flex items-center justify-center gap-1.5 border border-slate-700/60 shadow-xs"
-              title="Toggle role between Super Admin and Student"
+              title="Toggle role between Super Admin, Faculty, and Student"
             >
               <Sparkles className="w-3 h-3 text-amber-400" />
-              <span>Switch to {isAdmin ? 'Student' : 'Admin'}</span>
+              <span>Switch: {isSuperAdmin ? 'Faculty' : isFaculty ? 'Student' : 'Admin'}</span>
             </button>
             <button
               onClick={logout}

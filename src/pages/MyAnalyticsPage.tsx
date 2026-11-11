@@ -281,19 +281,6 @@ export const MyAnalyticsPage: React.FC = () => {
         skills={profile?.tagProblemCounts}
       />
 
-      {/* Pacing Momentum & Trajectory (Forecast Integration) */}
-      {forecastSummary && (
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <TrendingUp className="w-4 h-4 text-brand-600" />
-            <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
-              Practice Momentum & Trajectory Analytics
-            </h3>
-          </div>
-          <ForecastMetricsCard summary={forecastSummary} />
-        </div>
-      )}
-
       {/* Heatmap */}
       <ActivityHeatmap
         timeline={profile?.dailyActivityTimeline || []}
@@ -343,6 +330,19 @@ export const MyAnalyticsPage: React.FC = () => {
 
       {/* Behavioral Insights & Diagnostics */}
       <BehavioralInsightsCard insights={behavioralInsights} />
+
+      {/* Pacing Momentum & Trajectory (Forecast Integration) */}
+      {forecastSummary && (
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <TrendingUp className="w-4 h-4 text-brand-600" />
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
+              Practice Momentum & Trajectory Analytics
+            </h3>
+          </div>
+          <ForecastMetricsCard summary={forecastSummary} />
+        </div>
+      )}
     </div>
   );
 };
